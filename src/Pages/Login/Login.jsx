@@ -1,16 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import UserContext, { AuthContext } from "../../context/UserContext";
 
 const Login = () => {
+  const { singIn } = UserContext(AuthContext);
+  console.log(singIn);
+  const [loginError, setLoginError] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  console.log();
+
   const handleLogin = (data) => {
-    console.log(data);
+    singIn(data.email, data.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        setLoginError(error);
+      });
   };
+
   return (
     <div className="hero min-h-screen pt-10">
       <div className="hero-content">
@@ -44,6 +58,7 @@ const Login = () => {
                 className="input input-bordered"
                 required
               />
+              {loginError && <p className="text-red-500">{loginError}</p>}
             </div>
             <div className="form-control mt-6">
               <button type="submit" className="btn btn-accent">
